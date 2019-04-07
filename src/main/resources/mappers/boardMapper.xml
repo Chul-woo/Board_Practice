@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board">
+
+	<select id="showList" resultType="map" parameterType="map">
+		select
+		bno, title, content, writer, regdate, viewcnt, grp_cd, content_cd
+		from
+		board
+		where bno &gt; 0
+			and content_cd = '01'
+		order by bno desc
+	</select>
+
+	<select id="listCriteria" resultType="map">
+		<![CDATA[
+			select bno, title, content, writer, regdate, viewcnt, grp_cd, content_cd
+			from board
+			where bno > 0 and content_cd = '01'
+			order by bno desc
+			limit #{pageStart}, #{perPageNum}
+		]]>
+	</select>
+
+	<select id="getTotalCount" resultType="Integer">
+		select count(*) from board
+	</select>
+
+	<select id="select" resultType="map" parameterType="map">
+		select
+		bno, title, content, writer, regdate, viewcnt, grp_cd, content_cd
+		from
+		board
+		where bno = #{bno} and content_cd = '01'
+	</select>
+	
+	<select id="selectComment" resultType="map" parameterType="BoardVO">
+		select
+		bno, title, content, writer, regdate, viewcnt, grp_cd, content_cd
+		from
+		board
+		where grp_cd = #{grpCd} and content_cd = '02'
+	</select>
+
+	<insert id="insert" parameterType="map">
+		insert into board (title,
+		content, writer, grp_cd, content_cd)
+		values (#{title}, #{content}, #{writer}, #{grpCd}, #{contentCd})
+	</insert>
+	
+	<insert id="insertComment" parameterType = "map">
+		insert into board(
+			content, writer, grp_cd, content_cd
+		)values
+		(#{content}, #{writer}, #{grpCd}, #{contentCd})
+	</insert>
+
+	<update id="update" parameterType="map">
+		update board
+		set title =
+		#{title}, content=#{content}
+		where bno=#{bno}
+	</update>
+
+	<delete id="delete" parameterType="map">
+		delete from board
+		where
+		bno=#{bno}
+	</delete>
+
+	<update id="updateViewCnt" parameterType="map">
+		update board
+		set viewcnt = viewcnt + 1
+		where
+		bno = #{bno}
+	</update>
+
+	<select id="listSearch" resultType="map">
+		<![CDATA[
+			select bno, title, content, writer, regdate, viewcnt
+			from board
+			where bno>0
+		]]>
+			<include refid="search" />
+		<![CDATA[
+			order by bno desc
+			limit #{pageStart}, #{perPageNum}
+		]]>
+	</select>
+
+	<select id="searchCount" resultType="Integer">
+		select count(bno)
+		from board
+		where bno &gt; 0
+		<include refid="search" />
+	</select>
+
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				AND title like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				AND content like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'w'.toString()">
+				AND writer like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'tc'.toString()">
+				AND
+				( title like CONCAT('%', #{keyword}, '%')
+				  OR content like CONCAT('%', #{keyword}, '%')
+				)
+			</if>
+			<if test="searchType == 'cw'.toString()">
+				AND
+				( writer like CONCAT('%', #{keyword}, '%')
+				  OR content like CONCAT('%', #{keyword}, '%')
+				)
+			</if>
+			<if test="searchType == 'tcw'.toString()">
+				AND
+				( title like CONCAT('%', #{keyword}, '%')
+				  OR content like CONCAT('%', #{keyword}, '%')
+				  OR writer like CONCAT('%', #{keyword}, '%')
+				)
+			</if>			
+		</if>
+	</sql>
+
+</mapper>

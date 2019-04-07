@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+
+	<select id="login" resultType="map" parameterType="map">
+		select * from user
+		where id=#{id} and password = #{password}
+	</select>
+	
+	<select id="logining" resultType="UserVO" parameterType="map">
+		select * from user
+		where id=#{id}
+	</select>
+	
+	<insert id="insert" parameterType = "map">
+		insert into user (id, email, password, name, agree)
+		values (#{id}, #{email}, #{password}, #{name}, #{agree})
+	</insert>
+	
+	<select id = "checkId" parameterType="map" resultType = "int">
+		select * from user
+		where id = #{id}
+	</select>
+ 
+</mapper>
+
